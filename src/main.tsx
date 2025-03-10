@@ -8,6 +8,7 @@ import { MainProvider } from "./providers/main-provider"
 import { queryClient } from "./lib/query-client"
 import Spinner from "./components/ui/spinner"
 import App from "./app"
+import { ThemeProvider } from "next-themes"
 
 // Render the app
 const rootElement = document.getElementById("app")!
@@ -16,9 +17,16 @@ if (!rootElement.innerHTML) {
     root.render(
         <Suspense fallback={<Spinner />}>
             <QueryClientProvider client={queryClient}>
-                <MainProvider>
-                    <App />
-                </MainProvider>
+                <ThemeProvider
+                    attribute="class"
+                    enableSystem={false}
+                    defaultTheme="light"
+                >
+                    <MainProvider>
+                        <App />
+
+                    </MainProvider>
+                </ThemeProvider>
                 <Toaster />
             </QueryClientProvider>
         </Suspense>,

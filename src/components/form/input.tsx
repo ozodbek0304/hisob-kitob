@@ -42,10 +42,11 @@ export default function FormInput<IForm extends FieldValues>({
             {label && (
                 <Label
                     htmlFor={name}
+                    required={required}
                     className={cn(
                         !!errors?.[name] && "text-destructive",
                         "cursor-pointer",
-                        "text-base font-semibold",
+                        "text-sm font-semibold",
                     )}
                 >
                     {label}

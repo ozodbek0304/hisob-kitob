@@ -95,10 +95,10 @@ export default function ZipUploader() {
 
   return (
     <div className="w-full ">
-      <p className="text-md font-medium mb-2">ZIP fayl yuklash</p>
+      <p className="text-sm font-medium mb-2">ZIP fayl yuklash</p>
 
       <div
-        className={`border-2 border-dashed bg-white rounded-lg p-6 mb-4 text-center transition-colors
+        className={`border-2 border-none  bg-white dark:bg-slate-950 rounded-lg p-6 mb-4 text-center transition-colors
           ${isDragging ? "border-primary bg-primary/5" : "border-gray-300"}
           ${file ? "bg-green-50 border-green-300" : ""}`}
         onDragOver={handleDragOver}
@@ -107,14 +107,13 @@ export default function ZipUploader() {
       >
         {!file ? (
           <>
-            <Upload className="mx-auto h-9 w-9 text-gray-400 mb-2" />
-            <p className="text-lg font-medium mb-1">Faylni shu yerga tashlang</p>
-            <p className="text-sm text-muted-foreground mb-4">Fayl hajmi 200MB gacha • ZIP</p>
+            <p className="text-md font-medium mb-1">Faylni shu yerga tashlang</p>
+            <p className="text-[12px] text-muted-foreground mb-4">Fayl hajmi 200MB gacha • ZIP</p>
 
             <Button
               variant="outline"
               onClick={handleBrowseClick}
-              className="border-gray-400 bg-gray-50 hover:border-red-500  hover:bg-red-50 hover:text-red-600"
+              className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600"
             >
               Fayllarni ko'rish
             </Button>
@@ -135,11 +134,11 @@ export default function ZipUploader() {
       </div>
 
       <div className="flex w-full  gap-4">
-        <Button onClick={handleStartUpload} disabled={!file || isUploading} className="w-full">
+        <Button variant="outline" onClick={handleStartUpload} disabled={!file || isUploading} className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600">
           Boshlash
         </Button>
 
-        <Button variant="outline" onClick={handleReset} className="w-full">
+        <Button variant="outline" onClick={handleReset} className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600">
           Tozalash
         </Button>
       </div>

@@ -21,9 +21,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             onMouseLeave={() => setOpen(false)}
             style={{ zIndex: 50 }}
             {...props}
-
         >
-            <SidebarContent className="bg-gray-100 shadow-none   border-none">
+            <SidebarContent className="bg-gray-100 dark:bg-[#262730] shadow-none   border-none">
                 <NavMain />
                 <div className="w-full border my-4"></div>
                 <div className={open ? "block px-2" : "hidden"}>

@@ -73,7 +73,7 @@ export default function FinancialTracker() {
     ]
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-8">
+        <div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="w-full flex flex-col gap-2">
                     <Label htmlFor="Inn_1">
@@ -94,7 +94,7 @@ export default function FinancialTracker() {
                 <div className="w-full">
                     <div className="mt-8 mb-4">
                         <h1 className="text-2xl font-bold mb-2">Qarzdorlik: 0</h1>
-                        <h3 className="text-md mb-4 text-gray-600">Tushum</h3>
+                        <h3 className="text-md mb-4 text-gray-600 dark:text-white">Tushum</h3>
                     </div>
                     <DataTable isSuccess={true} columns={columnsLefts} data={data} />
                 </div>
@@ -102,7 +102,7 @@ export default function FinancialTracker() {
                 <div className="w-full">
                     <div className="mt-8 mb-4">
                         <h1 className="text-2xl font-bold mb-2">Qarzdorlik: 0</h1>
-                        <h3 className="text-md mb-4 text-gray-600">Xarajat</h3>
+                        <h3 className="text-md mb-4 text-gray-600 dark:text-white">Xarajat</h3>
                     </div>
                     <DataTable isSuccess={true} columns={columnsRights} data={data} />
                 </div>

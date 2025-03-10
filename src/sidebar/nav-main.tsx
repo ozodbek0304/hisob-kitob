@@ -1,6 +1,6 @@
 import {
-    LayoutDashboard,
-    Plane,
+    Calculator,
+    FileText,
 } from "lucide-react"
 
 import {
@@ -18,12 +18,12 @@ export function NavMain() {
     const links = [
         {
             to: "/",
-            icon: <LayoutDashboard />,
+            icon: <Calculator />,
             title: "Qarzdorlikni Hisoblash",
         },
         {
             to: "/data-create",
-            icon: <Plane />,
+            icon: <FileText />,
             title: "Malumotlarni Kiritish",
         },
     ]
@@ -40,7 +40,7 @@ export function NavMain() {
                 >
                     <SidebarMenuItem>
                         <SidebarMenuButton className="text-3xl text-primary font-extrabold gap-0">
-                           H <span>isob Kitob</span>
+                           {/* H <span>isob Kitob</span> */}
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </Link>
@@ -52,7 +52,7 @@ export function NavMain() {
                             key={item.to}
                             activeProps={{
                                 className:
-                                    "[&_button]:bg-primary hover:[&_button]:bg-primary hover:[&_button]:text-primary-foreground [&_button]:text-white text-primary-foreground",
+                                    "[&_button]:bg-primary dark:[&_button]:bg-[#ACB1C340]  hover:[&_button]:bg-primary  [&_button]:text-white text-primary-foreground",
                             }}
                             className="rounded-lg"
                             onClick={() => {
@@ -62,7 +62,7 @@ export function NavMain() {
                             <SidebarMenuItem>
                                 <SidebarMenuButton
                                     tooltip={title}
-                                    className="text-black/60"
+                                    className="text-black/60 dark:bg-[#262730] dark:text-white"
                                 >
                                     {item.icon}
                                     <span>{title}</span>
