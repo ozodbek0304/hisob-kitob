@@ -17,10 +17,11 @@ type Props = {
   data: { [key: string]: any }[]
   isSuccess: boolean
   id: string
+  hasFixedRowCount?:boolean
 }
 
 
-const DataTable = ({ data, columns, isSuccess, id }: Props) => {
+const DataTable = ({ data, columns, isSuccess, id, hasFixedRowCount=false }: Props) => {
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -40,6 +41,10 @@ const DataTable = ({ data, columns, isSuccess, id }: Props) => {
     console.log(id);
 
   }
+
+  const rowCount = hasFixedRowCount ? 10 : data.length;
+  const filledRows = isSuccess ? data.length : 0;
+  const emptyRows = hasFixedRowCount ? Math.max(0, rowCount - filledRows) : 0;
 
 
   return (
@@ -117,6 +122,20 @@ const DataTable = ({ data, columns, isSuccess, id }: Props) => {
             </TableRow>
 
           }
+
+          {hasFixedRowCount &&
+            [...Array(emptyRows)].map((_, index) => (
+              <TableRow key={`empty-${index}`}>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.key}
+                    className="border text-gray-400 dark:border-[#262730] font-normal max-w-[300px] text-center"
+                  >
+                    ---
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </div>

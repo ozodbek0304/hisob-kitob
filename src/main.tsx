@@ -20,7 +20,7 @@ if (!rootElement.innerHTML) {
                 <ThemeProvider
                     attribute="class"
                     enableSystem={false}
-                    defaultTheme="light"
+                    defaultTheme="dark"
                 >
                     <MainProvider>
                         <App />
