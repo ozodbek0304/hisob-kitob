@@ -1,6 +1,5 @@
 import FormInput from "@/components/form/input"
 import { Button } from "@/components/ui/button"
-import { setAccessToken } from "@/lib/set-token"
 import { REGISTER } from "@/services/api-endpoints"
 import { usePost } from "@/services/https"
 import { createFileRoute, Link } from "@tanstack/react-router"
@@ -22,9 +21,9 @@ function Register() {
             onSuccess: (data) => {
                 const access = data?.access_token
                 if (access) {
-                    setAccessToken(access)
                     toast.success("Successfully")
-                    window.location.replace("/login")
+                    window.location.replace("/login");
+                    methods.reset()
                 }
             },
         },
@@ -40,6 +39,7 @@ function Register() {
     const onSubmit = methods.handleSubmit((vals) => {
         mutate(REGISTER, vals,)
     })
+
 
     return (
         <div className="max-w-md m-auto  h-screen flex justify-center items-center relative">

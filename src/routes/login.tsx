@@ -1,7 +1,7 @@
 import FormInput from "@/components/form/input"
 import { Button } from "@/components/ui/button"
 import { setAccessToken } from "@/lib/set-token"
-import { LOGIN, REGISTER } from "@/services/api-endpoints"
+import { LOGIN } from "@/services/api-endpoints"
 import { usePost } from "@/services/https"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useForm } from "react-hook-form"
@@ -22,9 +22,10 @@ function Login() {
             onSuccess: (data) => {
                 const access = data?.access_token
                 if (access) {
-                    setAccessToken(access)
+                    setAccessToken(JSON.stringify(access))
                     toast.success("Successfully")
-                    window.location.replace("/")
+                    window.location.replace("/");
+                    methods.reset()
                 }
             },
         },
