@@ -1,8 +1,10 @@
 "use client"
 
-import { useState, useRef, type DragEvent, type ChangeEvent } from "react"
-import { Upload } from "lucide-react"
+import { useState, useRef, useEffect, type DragEvent, type ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
+import { usePost } from "@/services/https"
+import { UPLOAD } from "@/services/api-endpoints"
+import { toast } from "sonner"
 
 export default function ZipUploader() {
   const [file, setFile] = useState<File | null>(null)
@@ -10,8 +12,30 @@ export default function ZipUploader() {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  const MAX_FILE_SIZE = 200 * 1024 * 1024 // 200MB in bytes
+  const { mutate, isPending: isLoading } = usePost({
+    onSuccess: (data) => {
+      toast.success(data?.message)
+      handleReset()
+    }
+  },
+    {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    }
+  )
+
+  const MAX_FILE_SIZE = 200 * 1024 * 1024
+
+  useEffect(() => {
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current)
+      }
+    }
+  }, [])
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -41,13 +65,11 @@ export default function ZipUploader() {
   }
 
   const validateAndSetFile = (file: File) => {
-    // Check if file is a ZIP
     if (!file.name.endsWith(".zip")) {
       alert("Faqat ZIP fayllari qabul qilinadi")
       return
     }
 
-    // Check file size
     if (file.size > MAX_FILE_SIZE) {
       alert("Fayl hajmi 200MB dan oshmasligi kerak")
       return
@@ -66,22 +88,19 @@ export default function ZipUploader() {
     setIsUploading(true)
     setUploadProgress(0)
 
-    // Simulate upload progress
-    const interval = setInterval(() => {
+    progressIntervalRef.current = setInterval(() => {
       setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setIsUploading(false)
-          return 100
+        if (prev >= 95) {
+          return 95
         }
-        return prev + 5
+        return prev + 1
       })
-    }, 200)
+    }, 100)
 
-    // In a real application, you would upload the file to your server here
-    // const formData = new FormData()
-    // formData.append('file', file)
-    // await fetch('/api/upload', { method: 'POST', body: formData })
+    const formData = new FormData()
+    formData.append("file", file)
+
+    mutate(UPLOAD, formData)
   }
 
   const handleReset = () => {
@@ -91,7 +110,20 @@ export default function ZipUploader() {
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current)
+    }
   }
+
+  useEffect(() => {
+    if (!isLoading && isUploading) {
+      setUploadProgress(100)
+      setTimeout(() => {
+        setIsUploading(false)
+        setUploadProgress(0)
+      }, 500)
+    }
+  }, [isLoading, isUploading])
 
   return (
     <div className="w-full ">
@@ -125,22 +157,37 @@ export default function ZipUploader() {
             <p className="text-sm text-muted-foreground">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
 
             {isUploading && (
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mt-3">
-                <div className="bg-primary h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
+              <div className="w-full dark:bg-gray-700 rounded-lg h-2.5 mt-3">
+                <div
+                  className="bg-red-500 h-2.5 rounded-lg transition-all duration-300 ease-in-out"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
               </div>
             )}
           </div>
         )}
       </div>
 
-      <div className="flex w-full  gap-4">
-        <Button variant="outline" onClick={handleStartUpload} disabled={!file || isUploading} className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600">
-          Boshlash
-        </Button>
 
-        <Button variant="outline" onClick={handleReset} className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600">
+      <div className="flex w-full  gap-4">
+        <Button
+          variant="outline"
+          onClick={handleReset}
+          className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600"
+        >
           Tozalash
         </Button>
+
+        <Button
+          variant="outline"
+          onClick={handleStartUpload}
+          disabled={!file || isUploading}
+          className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600"
+        >
+          {isUploading ? "Yuklanmoqda..." : "Boshlash"}
+        </Button>
+
+
       </div>
     </div>
   )

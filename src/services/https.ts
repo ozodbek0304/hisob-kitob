@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { onError } from "@/lib/onError"
+import { onError } from "@/lib/onError"
 import {
     InfiniteData,
     MutateOptions,
@@ -190,7 +190,7 @@ const createMutationHook = <P = any, D = any>(requestFn: RequestFunction) => {
     ) => {
         const mutation = useMutation<D, any, { url: string; payload: P }>({
             mutationFn: ({ url, payload }) => requestFn(url, payload, config),
-            // onError,
+            onError,
             ...(options || {}),
         })
 
@@ -233,7 +233,7 @@ export const useDelete = (
 ) => {
     const mutation = useMutation<any, any, string>({
         mutationFn: (url) => deleteRequest(url, config),
-        // onError,
+        onError,
         ...(options || {}),
     })
 
