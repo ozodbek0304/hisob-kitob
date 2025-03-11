@@ -181,6 +181,7 @@ export default function ZipUploader() {
         <Button
           variant="outline"
           onClick={handleStartUpload}
+          loading={isUploading}
           disabled={!file || isUploading}
           className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600"
         >

@@ -4,46 +4,68 @@ import FormNumberInput from "../form/number-input";
 import FormMoneyInput from "../form/money-input";
 import DatePickerField from "../form/date-picker";
 import { Button } from "../ui/button";
+import { usePost } from "@/services/https";
+import { SAVE_BANK_DATA } from "@/services/api-endpoints";
+import { toast } from "sonner";
 
 type UserData = {
-    payerName: string,
-    receiverName: string,
-    supplierINN: string,
-    buyerINN: string,
+    payer_name: string,
+    receiver_name: string,
+    supplier_inn: string,
+    buyer_inn: string,
     price: string,
-    paymentDate: string,
+    payment_date: string,
 }
+
+const formattedNumber = (input: string) => {
+    return Number(input.replace(/\D/g, ''))
+};
 
 
 export const DataCreate = () => {
     const form = useForm<UserData>({
         defaultValues: {
-            payerName: "",
-            receiverName: "",
-            supplierINN: "",
-            buyerINN: "",
+            payer_name: "",
+            receiver_name: "",
+            supplier_inn: "",
+            buyer_inn: "",
             price: "",
-            paymentDate: "",
+            payment_date: "",
         }
     });
 
-    const handleSubmit = (values: UserData) => {
-        console.log(values);
+    const { mutate, isPending } = usePost({
+        onSuccess: (data) => {
+            toast.success(data?.message)
+            form.reset()
 
+        }
+    })
+
+    const handleSubmit = (values: UserData) => {
+        mutate(SAVE_BANK_DATA, {
+            ...values,
+            price: formattedNumber(values?.price)
+        })
     }
 
 
     return (
         <div>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="border  space-y-4 p-6 rounded-xl ">
-                <FormInput required label="To'lovchi nomi" methods={form} placeholder="To'lovchi nomi" name="payerName" />
-                <FormInput required label="Qabul qiluvchining nomi" methods={form} placeholder="Qabul qiluvchining nomi" name="receiverName" />
-                <FormNumberInput maxLength={11}  required label="Yetkazib beruvchi INN" methods={form} placeholder="Yetkazib beruvchi INN" name="supplierINN" />
-                <FormNumberInput maxLength={11} required label="Xaridor INN" methods={form} placeholder="Xaridor INN" name="buyerINN" />
-                <FormMoneyInput  required label="Narx" methods={form} placeholder="Narx" name="price" />
-                <DatePickerField required methods={form} placeholderText="To'lov sanasi" label="To'lov sanasi" name="paymentDate" />
+                <FormInput required label="To'lovchi nomi" methods={form} placeholder="To'lovchi nomi" name="payer_name" />
+                <FormInput required label="Qabul qiluvchining nomi" methods={form} placeholder="Qabul qiluvchining nomi" name="receiver_name" />
+                <FormNumberInput maxLength={11} required label="Yetkazib beruvchi INN" methods={form} placeholder="Yetkazib beruvchi INN" name="supplier_inn" />
+                <FormNumberInput maxLength={11} required label="Xaridor INN" methods={form} placeholder="Xaridor INN" name="buyer_inn" />
+                <FormMoneyInput required label="Narx" methods={form} placeholder="Narx" name="price" />
+                <DatePickerField required methods={form} placeholderText="To'lov sanasi" label="To'lov sanasi" name="payment_date" />
                 <div className="w-full flex justify-end">
-                    <Button type="submit" className="px-8  dark:text-white dark:bg-[#262730]">Yuborish</Button>
+                    <Button
+                        loading={isPending}
+                        disabled={isPending}
+                        type="submit" className="px-8  dark:text-white dark:bg-[#262730]">
+                        {isPending ? "Tekshirilmoqda" : "Yuborish"}
+                    </Button>
                 </div>
             </form>
 

@@ -21,6 +21,9 @@ interface IProps<IForm extends FieldValues> {
     suffix?: string
 }
 
+
+
+
 export default function FormMoneyInput<IForm extends FieldValues>({
     methods,
     name,
@@ -73,17 +76,20 @@ export default function FormMoneyInput<IForm extends FieldValues>({
                     "flex h-9 w-full rounded-md border border-input bg-background dark:bg-[#262730] px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
                     className,
                     isTouched &&
-                        !!error &&
-                        !label &&
-                        "border-destructive focus:border-border !ring-destructive",
+                    !!error &&
+                    !label &&
+                    "border-destructive focus:border-border !ring-destructive",
                 )}
-                thousandSeparator={thousandSeparator}
-                decimalSeparator={decimalSeparator}
+                thousandSeparator={thousandSeparator ?? ""}
+                decimalSeparator={decimalSeparator || ""}
                 getInputRef={ref}
                 suffix={suffix}
                 {...props}
                 {...field}
-                onValueChange={field.onChange}
+                onValueChange={(values) => {
+                    field.onChange(String(values.value || ""));
+                }}
+
                 placeholder={placeholder || label}
                 disabled={field.disabled || props.disabled}
             />

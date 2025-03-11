@@ -1,10 +1,20 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
 import { Label } from "../ui/label"
 import DataTable from "@/custom/table"
+import { useGet } from "@/services/https"
+import { TRANSACTIONS } from "@/services/api-endpoints"
+import { cn } from "@/lib/utils"
+import { NumericFormat } from "react-number-format"
+import { useState } from "react"
 
 export default function FinancialTracker() {
+
+    const [queryINN, setQueryINN] = useState<{ buyer_inn?: number, supplier_inn?: number }>({ buyer_inn: 0, supplier_inn: 0 });
+    const filteredParams = Object.fromEntries(
+        Object.entries(queryINN).filter(([_, value]) => value !== 0)
+    );
+    const { data: dataTransactions } = useGet(TRANSACTIONS, { params: filteredParams });
 
     const data = [
         {
@@ -16,6 +26,7 @@ export default function FinancialTracker() {
             amount: 200
         },
     ]
+
 
     const data2 = [
         {
@@ -72,6 +83,8 @@ export default function FinancialTracker() {
         },
     ]
 
+
+
     return (
         <div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -79,13 +92,43 @@ export default function FinancialTracker() {
                     <Label htmlFor="Inn_1">
                         Sotib oluvchi INN
                     </Label>
-                    <Input name="Inn_1" fullWidth placeholder="Sotib oluvchi INN" />
+                    <NumericFormat
+                        maxLength={11}
+                        id={"Inn_1"}
+                        className={cn(
+                            "flex h-9 w-full rounded-md border border-input bg-background dark:bg-[#262730] px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+
+                        )}
+                        thousandSeparator={" "}
+                        placeholder={"Sotib oluvchi INN"}
+                        onValueChange={(val) => {
+                            if (val) {
+                                setQueryINN((prev) => ({ ...prev, buyer_inn: val.floatValue }))
+                            }
+                        }}
+                        allowNegative={false}
+                    />
                 </div>
                 <div className="w-full flex flex-col gap-2">
                     <Label htmlFor="Inn_1">
                         Yetkazib beruvchi INN
                     </Label>
-                    <Input name="Inn_1" fullWidth placeholder="Yetkazib beruvchi INN" />
+                    <NumericFormat
+                        maxLength={11}
+                        id={"Inn_1"}
+                        className={cn(
+                            "flex h-9 w-full rounded-md border border-input bg-background dark:bg-[#262730] px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+
+                        )}
+                        thousandSeparator={" "}
+                        placeholder={"Yetkazib beruvchi INN"}
+                        onValueChange={(val) => {
+                            if (val) {
+                                setQueryINN((prev) => ({ ...prev, supplier_inn: val.floatValue }))
+                            }
+                        }}
+                        allowNegative={false}
+                    />
                 </div>
             </div>
 
@@ -94,24 +137,24 @@ export default function FinancialTracker() {
                 <div className="w-full">
                     <div className="mt-8 mb-4">
                         <h1 className="text-2xl font-bold mb-2">Qarzdorlik: 0</h1>
-                        <h3 className="text-md mb-4 text-gray-600 dark:text-white">Tushum</h3>
+                        <h3 className="text-md mb-6 text-gray-600 dark:text-white">Tushum</h3>
                     </div>
-                    <DataTable isSuccess={true} columns={columnsLefts} data={data} />
+                    <DataTable id="1" isSuccess={true} columns={columnsLefts} data={data} />
                 </div>
 
                 <div className="w-full">
                     <div className="mt-8 mb-4">
                         <h1 className="text-2xl font-bold mb-2">Qarzdorlik: 0</h1>
-                        <h3 className="text-md mb-4 text-gray-600 dark:text-white">Xarajat</h3>
+                        <h3 className="text-md mb-6 text-gray-600 dark:text-white">Xarajat</h3>
                     </div>
-                    <DataTable isSuccess={true} columns={columnsRights} data={data} />
+                    <DataTable id="2" isSuccess={true} columns={columnsRights} data={data} />
                 </div>
 
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-                <DataTable isSuccess={true} columns={columnsLefts2} data={data2} />
-                <DataTable isSuccess={true} columns={columnsRights2} data={data2} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-12">
+                <DataTable id="3" isSuccess={true} columns={columnsLefts2} data={data2} />
+                <DataTable id="4" isSuccess={true} columns={columnsRights2} data={data2} />
             </div>
         </div>
     )

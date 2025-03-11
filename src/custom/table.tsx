@@ -2,8 +2,9 @@
 
 import type React from "react"
 import { useState, useRef } from "react"
-import { Maximize2, Minimize2 } from "lucide-react"
+import { Download, Maximize2, Minimize2 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { downloadExcel } from "@/lib/download-excel"
 
 type Column = {
   key: string
@@ -15,9 +16,11 @@ type Props = {
   columns: Column[]
   data: { [key: string]: any }[]
   isSuccess: boolean
+  id: string
 }
 
-const DataTable = ({ data, columns, isSuccess }: Props) => {
+
+const DataTable = ({ data, columns, isSuccess, id }: Props) => {
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -32,29 +35,48 @@ const DataTable = ({ data, columns, isSuccess }: Props) => {
     }
   };
 
+  const handleExcel = () => {
+    // downloadExcel(data)
+    console.log(id);
+    
+  }
+
 
   return (
     <div
       ref={tableContainerRef}
-      className={`relative border rounded-md ${isFullScreen ? "fixed inset-0 z-50 bg-white dark:bg-[#ACB1C340] overflow-auto p-4" : ""}`}
+      className={`relative border rounded-md ${isFullScreen ? "fixed inset-0 z-50 bg-white dark:bg-[#262730] overflow-auto p-4" : ""}`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       {isHovering && (
-        <button
-          onClick={toggleFullScreen}
-          className="absolute top-1 right-1 z-10 p-1.5 bg-white dark:bg-[#262730] rounded-md shadow-md hover:bg-gray-100 dark:hover:bg-slate-900 transition-all duration-200"
-          aria-label={isFullScreen ? "Exit full screen" : "Enter full screen"}
-        >
-          {isFullScreen ? (
-            <Minimize2 className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-          ) : (
-            <Maximize2 className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-          )}
-        </button>
+        <div className={`absolute  ${isFullScreen ? "top-2 right-2" : "-top-8 right-0"} pb-2  bg-transparent  z-10`}>
+          <div className=" dark:bg-[#262730]  rounded-md shadow-md ">
+            <button
+              onClick={handleExcel}
+              className=" p-1.5  transition-all duration-200 dark:hover:bg-gray-700 rounded-lg"
+              aria-label={isFullScreen ? "Exit full screen" : "Enter full screen"}
+            >
+              <Download className="h-4 w-4 text-gray-600 dark:text-white" />
+            </button>
+
+            <button
+              onClick={toggleFullScreen}
+              className=" p-1.5  transition-all duration-200 dark:hover:bg-gray-700 rounded-lg"
+              aria-label={isFullScreen ? "Exit full screen" : "Enter full screen"}
+            >
+              {isFullScreen ? (
+                <Minimize2 className="h-4 w-4 text-gray-600 dark:text-white" />
+              ) : (
+                <Maximize2 className="h-4 w-4 text-gray-600 dark:text-white" />
+              )}
+            </button>
+          </div>
+
+        </div>
       )}
 
-      <Table className="border w-full">
+      <Table id={id} className="border w-full">
         <TableHeader className="bg-gray-100 dark:bg-[#262730] ">
           <TableRow>
             {columns.map((column) => (

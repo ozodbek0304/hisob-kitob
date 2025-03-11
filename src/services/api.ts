@@ -23,12 +23,12 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 403) {
-      localStorage.removeItem("token");
+  (res) => res,
+  (err) => {
+    if ([401, 403].includes(err.response?.status)) {
+      localStorage.removeItem(TOKEN);
       window.location.href = "/login";
     }
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
