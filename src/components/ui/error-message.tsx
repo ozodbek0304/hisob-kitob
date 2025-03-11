@@ -7,7 +7,7 @@ interface IProps {
 }
 export default function ErrorMessage({ children, className }: IProps) {
     return (
-        <p className={cn("text-destructive text-xs font-medium", className)}>
+        <p className={cn("text-red-600 text-xs font-medium", className)}>
             {children}
         </p>
     )

@@ -44,7 +44,7 @@ export default function FormInput<IForm extends FieldValues>({
                     htmlFor={name}
                     required={required}
                     className={cn(
-                        !!errors?.[name] && "text-destructive",
+                        !!errors?.[name] && "text-red-600",
                         "cursor-pointer",
                         "text-sm font-semibold",
                     )}

@@ -59,7 +59,7 @@ export default function FormMoneyInput<IForm extends FieldValues>({
                     htmlFor={name}
                     required={required}
                     className={cn(
-                        !!error && "text-destructive",
+                        !!error && "text-red-600",
                         "cursor-pointer",
                         "text-sm font-semibold",
                     )}

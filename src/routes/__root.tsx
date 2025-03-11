@@ -15,7 +15,7 @@ export const Route = createRootRouteWithContext<
     component: Root,
     notFoundComponent: () => {
         return (
-            <main className="grid place-items-center h-screen w-full bg-primary-foreground">
+            <main className="grid place-items-center h-screen w-full bg-primary-foreground ">
                 <div className="shadow rounded-md p-4 flex flex-col gap-2">
                     <Link to="/">
                         <Button>Back to home page</Button>

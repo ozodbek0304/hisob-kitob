@@ -6,7 +6,7 @@ export const Header = () => {
     return (
         <header className="z-50 sticky top-0  ">
 
-           <div className="flex w-full bg-gray-50 dark:bg-slate-950 p-4 shadow justify-end">
+           <div className="flex w-full bg-background p-4 shadow justify-end">
            <div className="items-center flex justify-end gap-2">
            <ThemeButton />
            <Printer/>

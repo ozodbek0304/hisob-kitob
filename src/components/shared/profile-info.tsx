@@ -9,16 +9,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOutIcon } from "lucide-react";
+import { TOKEN } from "@/lib/localstorage-keys";
 
 
 const ProfileInfo = () => {
   function LogOut() {
-    window.location.assign("/auth");
-    localStorage.clear();
+    window.location.assign("/login");
+    localStorage.removeItem(TOKEN);
   }
-
-
-
 
 
   return (

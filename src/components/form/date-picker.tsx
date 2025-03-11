@@ -75,7 +75,7 @@ export default function DatePickerField<IForm extends FieldValues>({
             {label && (
                 <Label
                     htmlFor={name}
-                    className={cn(!!error && "text-destructive ",
+                    className={cn(!!error && "text-red-600",
                         "cursor-pointer",
                         "text-sm font-semibold",
                     )}

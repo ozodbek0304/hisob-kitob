@@ -1,6 +1,7 @@
+import { TOKEN } from "@/lib/localstorage-keys";
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_DEFAULT_URL
+const baseURL = import.meta.env.VITE_DEFAULT_URL;
 
 export const api = axios.create({
   baseURL: baseURL,
@@ -9,16 +10,25 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      return Promise.reject(new Error("Ruxsat yo'q!"));
-    }
-
-    config.headers.Authorization = `Bearer ${token}`;
-    return config;
+      const storedToken = localStorage.getItem(TOKEN);
+      if (storedToken && JSON.parse(storedToken).access) {
+          const token = JSON.parse(storedToken).access;
+          config.headers['Authorization'] = `Bearer ${token}`;
+      }
+      return config;
   },
   (error) => {
+      return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 403) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
     return Promise.reject(error);
   }
 );

@@ -1,14 +1,14 @@
 import FormInput from "@/components/form/input"
 import { Button } from "@/components/ui/button"
 import { setAccessToken } from "@/lib/set-token"
-import { LOGIN, REGISTER } from "@/services/api-endpoints"
+import { REGISTER } from "@/services/api-endpoints"
 import { usePost } from "@/services/https"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export const Route = createFileRoute("/login")({
-    component: Login,
+export const Route = createFileRoute("/register")({
+    component: Register,
 })
 
 type Form = {
@@ -16,7 +16,7 @@ type Form = {
     password: string
 }
 
-function Login() {
+function Register() {
     const { error, mutate, isError, isPending } = usePost(
         {
             onSuccess: (data) => {
@@ -24,7 +24,7 @@ function Login() {
                 if (access) {
                     setAccessToken(access)
                     toast.success("Successfully")
-                    window.location.replace("/")
+                    window.location.replace("/login")
                 }
             },
         },
@@ -38,7 +38,7 @@ function Login() {
     const methods = useForm<Form>({})
 
     const onSubmit = methods.handleSubmit((vals) => {
-        mutate(LOGIN, vals,)
+        mutate(REGISTER, vals,)
     })
 
     return (
@@ -61,10 +61,10 @@ function Login() {
                     required
                 />
                 <Button type="submit" variant={"outline"} className="  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600" loading={isPending}>
-                    Kirish
-                </Button>
-                <Link to="/register" className="text-end text-md hover:text-red-600">
                     Ro'yxatdan o'tish
+                </Button>
+                <Link to="/login" className="text-end text-md hover:text-red-600">
+                    Kirish
                 </Link>
 
                 {isError && (
