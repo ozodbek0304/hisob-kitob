@@ -1,10 +1,12 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Download, Maximize2, Minimize2 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { downloadExcel } from "@/lib/download-excel"
+import { useGet } from "@/services/https"
+import { TRANSACTIONS_EXCEL } from "@/services/api-endpoints"
 
 type Column = {
   key: string
@@ -17,14 +19,18 @@ type Props = {
   data: { [key: string]: any }[]
   isSuccess: boolean
   id: string
-  hasFixedRowCount?:boolean
+  hasFixedRowCount?: boolean
+  filteredParams?: any
 }
 
 
-const DataTable = ({ data, columns, isSuccess, id, hasFixedRowCount=false }: Props) => {
+const DataTable = ({ data, columns, isSuccess, id, hasFixedRowCount = false, filteredParams }: Props) => {
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
-  const tableContainerRef = useRef<HTMLDivElement>(null)
+  const [stateBol, setStateBol] = useState(false)
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  const { data: dataDownload } = useGet(TRANSACTIONS_EXCEL, { params: { ...filteredParams, file_type: id }, options: { enabled: stateBol } })
 
   const toggleFullScreen = () => {
     setIsFullScreen((prev) => !prev);
@@ -37,14 +43,20 @@ const DataTable = ({ data, columns, isSuccess, id, hasFixedRowCount=false }: Pro
   };
 
   const handleExcel = () => {
-    // downloadExcel(data)
-    console.log(id);
-
+    setStateBol(true);
   }
 
   const rowCount = hasFixedRowCount ? 10 : data.length;
   const filledRows = isSuccess ? data.length : 0;
   const emptyRows = hasFixedRowCount ? Math.max(0, rowCount - filledRows) : 0;
+
+
+  useEffect(() => {
+    if (dataDownload) {
+      downloadExcel(dataDownload)
+    }
+  }, [stateBol, dataDownload]);
+
 
 
   return (

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { usePost } from "@/services/https";
 import { UPLOAD } from "@/services/api-endpoints";
 import { toast } from "sonner";
+import { downloadExcel } from "@/lib/download-excel";
 
 export default function ZipUploader() {
   const [files, setFiles] = useState<File[]>([]);
@@ -19,6 +20,7 @@ export default function ZipUploader() {
     onSuccess: (data) => {
       toast.success(data?.message);
       handleReset();
+      downloadExcel(data)
     },
   },
     {
