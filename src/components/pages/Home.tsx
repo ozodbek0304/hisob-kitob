@@ -7,7 +7,8 @@ import { TRANSACTIONS } from "@/services/api-endpoints"
 import { cn } from "@/lib/utils"
 import { NumericFormat } from "react-number-format"
 import { useState } from "react"
-import { ArrowDownToLine, ArrowUpFromLine, MoveDown, MoveUp } from "lucide-react"
+import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react"
+import { addPeriodToThousands } from "@/lib/price-formatter"
 
 export default function FinancialTracker() {
 
@@ -15,30 +16,8 @@ export default function FinancialTracker() {
     const filteredParams = Object.fromEntries(
         Object.entries(queryINN).filter(([_, value]) => value !== 0)
     );
-    const { data: dataTransactions } = useGet(TRANSACTIONS, { params: filteredParams, options: { enabled: Boolean(queryINN?.buyer_inn || queryINN.supplier_inn) } });
+    const { data: dataTransactions, isSuccess } = useGet(TRANSACTIONS, { params: filteredParams });
 
-    const data = [
-        {
-            name: "Financial Tracker",
-            amount: 100
-        },
-        {
-            name: "Financial Tracker",
-            amount: 200
-        },
-    ]
-
-
-    const data2 = [
-        {
-            name: "Financial Tracker",
-            amount: 100
-        },
-        {
-            name: "Financial Tracker",
-            amount: 200
-        },
-    ]
 
     const columnsLefts = [
         {
@@ -46,8 +25,11 @@ export default function FinancialTracker() {
             label: "Jami Topshirilgan Faktura",
         },
         {
-            key: "amount",
+            key: "price",
             label: "Jami Kirim",
+            render: (value: number) => (
+                <span>{addPeriodToThousands(value)}</span>
+            )
         },
     ]
 
@@ -57,8 +39,11 @@ export default function FinancialTracker() {
             label: "Jami Topshirilgan Faktura",
         },
         {
-            key: "amount",
+            key: "price",
             label: "Jami Chiqim",
+            render: (value: number) => (
+                <span>{addPeriodToThousands(value)}</span>
+            )
         },
     ]
 
@@ -66,24 +51,29 @@ export default function FinancialTracker() {
         {
             key: "name",
             label: "Qabul Qilingan Faktura",
+            render: (value: number) => (
+                <span>{addPeriodToThousands(value)}</span>
+            )
         },
         {
-            key: "amount",
+            key: "price",
             label: "Bank DB",
+            render: (value: number) => (
+                <span>{addPeriodToThousands(value)}</span>
+            )
         },
     ]
 
-    const columnsRights2 = [
-        {
-            key: "name",
-            label: "Topshirilgan Faktura",
-        },
-        {
-            key: "amount",
-            label: "Bank KR",
-        },
-    ]
 
+    const dataCredit = isSuccess && dataTransactions.invoice.map((item: any, index: number) => ({
+        name: item.price,
+        price: dataTransactions.credit[index]?.price || "---",
+    }));
+
+    const dataDb = isSuccess && dataTransactions.invoice.map((item: any, index: number) => ({
+        name: item.price,
+        price: dataTransactions.debit[index]?.price || "---",
+    }));
 
 
 
@@ -140,25 +130,27 @@ export default function FinancialTracker() {
 
                 <div className="w-full">
                     <div className="mt-8 mb-4">
-                        <h1 className="text-2xl font-bold mb-2 dark:text-white"><span>Qarzdorlik:</span> <span>-200 000 so'm</span> </h1>
+                        <h1 className="text-2xl font-bold mb-2 dark:text-white"><span>Qarzdorlik:</span> <span>{addPeriodToThousands(dataTransactions?.diff_debit)}</span> </h1>
                         <h3 className="text-md mb-6 dark:text-white flex items-center gap-1"><span>Tushum</span> <ArrowDownToLine className="h-4 w-4" /></h3>
                     </div>
-                    <DataTable id="1" isSuccess={true} columns={columnsLefts} data={data} />
+                    <DataTable id="1" isSuccess={isSuccess} columns={columnsLefts} data={[{ name: addPeriodToThousands(dataTransactions?.invoice_total), price: (dataTransactions?.credit_total) }]} />
                 </div>
 
                 <div className="w-full">
                     <div className="mt-8 mb-4">
-                    <h1 className="text-2xl font-bold mb-2 dark:text-white"><span>Qarzdorlik:</span> <span>-200 000 so'm</span> </h1>
+                        <h1 className="text-2xl font-bold mb-2 dark:text-white"><span>Qarzdorlik:</span> <span>{addPeriodToThousands(dataTransactions?.diff_credit)}</span> </h1>
                         <h3 className="text-md mb-6 dark:text-white flex items-center gap-1"><span>Xarajat</span> <ArrowUpFromLine className="h-4 w-4" /></h3>
                     </div>
-                    <DataTable id="2" isSuccess={true} columns={columnsRights} data={data} />
+                    <DataTable id="2" isSuccess={isSuccess} columns={columnsRights} data={[{ name: addPeriodToThousands(dataTransactions?.invoice_total), price: dataTransactions?.debit_total }]} />
                 </div>
 
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-12">
-                <DataTable id="3" isSuccess={true} hasFixedRowCount columns={columnsLefts2} data={data2} />
-                <DataTable id="4" isSuccess={true} hasFixedRowCount columns={columnsRights2} data={data2} />
+                <DataTable id="3" isSuccess={isSuccess} hasFixedRowCount columns={columnsLefts2}
+                    data={dataDb}
+                />
+                <DataTable id="4" isSuccess={isSuccess} hasFixedRowCount columns={columnsLefts2} data={dataCredit} />
             </div>
 
         </div>

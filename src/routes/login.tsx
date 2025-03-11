@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { setAccessToken } from "@/lib/set-token"
 import { LOGIN } from "@/services/api-endpoints"
 import { usePost } from "@/services/https"
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -64,9 +64,6 @@ function Login() {
                 <Button type="submit" variant={"outline"} className="  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600" loading={isPending}>
                     Kirish
                 </Button>
-                <Link to="/register" className="text-end text-md hover:text-red-600">
-                    Ro'yxatdan o'tish
-                </Link>
 
                 {isError && (
                     <p className="text-red-600 text-center">

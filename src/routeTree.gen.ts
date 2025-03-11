@@ -11,19 +11,12 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
 import { Route as MainImport } from './routes/_main'
 import { Route as MainIndexImport } from './routes/_main/index'
 import { Route as MainDataCreateImport } from './routes/_main/data-create'
 
 // Create/Update Routes
-
-const RegisterRoute = RegisterImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const LoginRoute = LoginImport.update({
   id: '/login',
@@ -66,13 +59,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterImport
-      parentRoute: typeof rootRoute
-    }
     '/_main/data-create': {
       id: '/_main/data-create'
       path: '/data-create'
@@ -107,14 +93,12 @@ const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 export interface FileRoutesByFullPath {
   '': typeof MainRouteWithChildren
   '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
   '/data-create': typeof MainDataCreateRoute
   '/': typeof MainIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
   '/data-create': typeof MainDataCreateRoute
   '/': typeof MainIndexRoute
 }
@@ -123,36 +107,27 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_main': typeof MainRouteWithChildren
   '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
   '/_main/data-create': typeof MainDataCreateRoute
   '/_main/': typeof MainIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/login' | '/register' | '/data-create' | '/'
+  fullPaths: '' | '/login' | '/data-create' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/register' | '/data-create' | '/'
-  id:
-    | '__root__'
-    | '/_main'
-    | '/login'
-    | '/register'
-    | '/_main/data-create'
-    | '/_main/'
+  to: '/login' | '/data-create' | '/'
+  id: '__root__' | '/_main' | '/login' | '/_main/data-create' | '/_main/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   MainRoute: typeof MainRouteWithChildren
   LoginRoute: typeof LoginRoute
-  RegisterRoute: typeof RegisterRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   MainRoute: MainRouteWithChildren,
   LoginRoute: LoginRoute,
-  RegisterRoute: RegisterRoute,
 }
 
 export const routeTree = rootRoute
@@ -166,8 +141,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_main",
-        "/login",
-        "/register"
+        "/login"
       ]
     },
     "/_main": {
@@ -179,9 +153,6 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
-    },
-    "/register": {
-      "filePath": "register.tsx"
     },
     "/_main/data-create": {
       "filePath": "_main/data-create.tsx",
