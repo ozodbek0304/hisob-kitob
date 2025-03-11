@@ -21,6 +21,10 @@ export default function FinancialTracker() {
             name: "Financial Tracker",
             amount: 100
         },
+        {
+            name: "Financial Tracker",
+            amount: 200
+        },
     ]
 
 
@@ -129,7 +133,7 @@ export default function FinancialTracker() {
                 </div>
             </div>
 
-            {(queryINN.buyer_inn || queryINN.supplier_inn) ? <>
+           
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
@@ -155,7 +159,7 @@ export default function FinancialTracker() {
                     <DataTable id="3" isSuccess={true} columns={columnsLefts2} data={data2} />
                     <DataTable id="4" isSuccess={true} columns={columnsRights2} data={data2} />
                 </div>
-            </> : null}
+           
         </div>
     )
 }

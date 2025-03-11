@@ -33,7 +33,7 @@ export function NavMain() {
             <SidebarMenu>
                 <Link
                     to="/"
-                    className="rounded-lg mb-8"
+                    className="rounded-lg mb-4"
                     onClick={() => {
                         setOpenMobile(false)
                     }}

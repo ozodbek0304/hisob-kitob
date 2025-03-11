@@ -24,7 +24,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         >
             <SidebarContent className="bg-gray-100 dark:bg-[#262730] shadow-none   border-none">
                 <NavMain />
-                <div className="w-full border my-4"></div>
+                <div className="w-full border dark:border-gray-600 my-4 mb-7"></div>
                 <div className={open ? "block px-2" : "hidden"}>
                     <ZipUploader />
                 </div>

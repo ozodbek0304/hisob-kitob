@@ -52,6 +52,7 @@ export const DataCreate = () => {
 
     return (
         <div>
+            <h1 className="mb-3 lg:text-2xl text-lg  text-center">Faktura ma'lumotlarini kiriting!</h1>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="border  space-y-4 p-6 rounded-xl ">
                 <FormInput required label="To'lovchi nomi" methods={form} placeholder="To'lovchi nomi" name="payer_name" />
                 <FormInput required label="Qabul qiluvchining nomi" methods={form} placeholder="Qabul qiluvchining nomi" name="receiver_name" />
@@ -64,7 +65,7 @@ export const DataCreate = () => {
                         loading={isPending}
                         disabled={isPending}
                         type="submit" className="px-8  dark:text-white dark:bg-[#262730]">
-                        {isPending ? "Tekshirilmoqda" : "Yuborish"}
+                        {isPending ? "Tekshirilmoqda" : "Saqlash"}
                     </Button>
                 </div>
             </form>

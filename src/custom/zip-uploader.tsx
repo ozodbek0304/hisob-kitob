@@ -27,7 +27,7 @@ export default function ZipUploader() {
     }
   )
 
-  const MAX_FILE_SIZE = 200 * 1024 * 1024
+  const MAX_FILE_SIZE = 1000 * 1024 * 1024
 
   useEffect(() => {
     return () => {
@@ -66,12 +66,12 @@ export default function ZipUploader() {
 
   const validateAndSetFile = (file: File) => {
     if (!file.name.endsWith(".zip")) {
-      alert("Faqat ZIP fayllari qabul qilinadi")
+      toast.warning("Faqat ZIP fayllari qabul qilinadi")
       return
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      alert("Fayl hajmi 200MB dan oshmasligi kerak")
+      toast.warning("Fayl hajmi 1000 MB dan oshmasligi kerak")
       return
     }
 
@@ -127,10 +127,9 @@ export default function ZipUploader() {
 
   return (
     <div className="w-full ">
-      <p className="text-sm font-medium mb-2">ZIP fayl yuklash</p>
 
       <div
-        className={`border-2 border-none  bg-white dark:bg-slate-950 rounded-lg p-6 mb-4 text-center transition-colors
+        className={`border-2 border-none  bg-white dark:bg-background rounded-lg p-6 mb-4 text-center transition-colors
           ${isDragging ? "border-primary bg-primary/5" : "border-gray-300"}
           ${file ? "bg-green-50 border-green-300" : ""}`}
         onDragOver={handleDragOver}
@@ -139,15 +138,14 @@ export default function ZipUploader() {
       >
         {!file ? (
           <>
-            <p className="text-md font-medium mb-1">Faylni shu yerga tashlang</p>
-            <p className="text-[12px] text-muted-foreground mb-4">Fayl hajmi 200MB gacha • ZIP</p>
+            <p className="text-[12px] text-muted-foreground mb-4">Fayl hajmi 1000 MB gacha • ZIP</p>
 
             <Button
               variant="outline"
               onClick={handleBrowseClick}
               className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600"
             >
-              Fayllarni ko'rish
+              Fayllarni yuklash
             </Button>
             <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".zip" className="hidden" />
           </>
@@ -157,11 +155,13 @@ export default function ZipUploader() {
             <p className="text-sm text-muted-foreground">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
 
             {isUploading && (
-              <div className="w-full dark:bg-gray-700 rounded-lg h-2.5 mt-3">
+                <div className="w-full dark:bg-gray-700 rounded-lg h-2.5 mt-3 ">
                 <div
-                  className="bg-red-500 h-2.5 rounded-lg transition-all duration-300 ease-in-out"
+                  className="bg-green-500 h-2.5 relative rounded-lg transition-all duration-300 ease-in-out"
                   style={{ width: `${uploadProgress}%` }}
-                ></div>
+                >
+                  <span className="text-[10px] top-[50%] translate-y-[-50%] right-2 absolute">{`${uploadProgress}%`}</span>
+                </div>
               </div>
             )}
           </div>
@@ -172,21 +172,22 @@ export default function ZipUploader() {
       <div className="flex w-full  gap-4">
         <Button
           variant="outline"
+          onClick={handleStartUpload}
+          loading={isUploading}
+          disabled={!file || isUploading}
+          className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-green-500  hover:bg-red-50 hover:text-green-600"
+        >
+          {"Boshlash"}
+        </Button>
+        <Button
+          variant="outline"
           onClick={handleReset}
           className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600"
         >
           Tozalash
         </Button>
 
-        <Button
-          variant="outline"
-          onClick={handleStartUpload}
-          loading={isUploading}
-          disabled={!file || isUploading}
-          className="border-gray-400  w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500  hover:bg-red-50 hover:text-red-600"
-        >
-          {isUploading ? "Yuklanmoqda..." : "Boshlash"}
-        </Button>
+
 
 
       </div>

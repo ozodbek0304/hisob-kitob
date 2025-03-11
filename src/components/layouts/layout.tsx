@@ -16,7 +16,7 @@ export default function Layout({ children, className }: Props) {
 
     return <main className="">
         <Header />
-        <div className={cn(`p-4 `, className)}>
+        <div className={cn(`px-4 py-2`, className)}>
             {children}
         </div>
     </main>

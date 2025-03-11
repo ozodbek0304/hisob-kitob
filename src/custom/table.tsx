@@ -45,7 +45,7 @@ const DataTable = ({ data, columns, isSuccess, id }: Props) => {
   return (
     <div
       ref={tableContainerRef}
-      className={`relative border rounded-md ${isFullScreen ? "fixed inset-0 z-50 bg-white dark:bg-[#262730] overflow-auto p-4" : ""}`}
+      className={`relative border rounded-md ${isFullScreen ? "fixed inset-0 z-50 bg-white  dark:bg-black overflow-auto p-4 pt-12" : ""}`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
