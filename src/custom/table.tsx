@@ -38,7 +38,7 @@ const DataTable = ({ data, columns, isSuccess, id }: Props) => {
   const handleExcel = () => {
     // downloadExcel(data)
     console.log(id);
-    
+
   }
 
 
@@ -81,7 +81,7 @@ const DataTable = ({ data, columns, isSuccess, id }: Props) => {
           <TableRow>
             {columns.map((column) => (
               <TableHead
-                className="text-center text-gray-500 dark:bg-[#262730] font-normal border dark:border-[#262730]"
+                className="text-center text-gray-400 dark:bg-[#262730] font-normal border dark:border-[#262730]"
                 key={column.key}
               >
                 {column.label}
@@ -90,20 +90,33 @@ const DataTable = ({ data, columns, isSuccess, id }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {isSuccess &&
-            data?.length > 0 &&
+          {(isSuccess && data?.length > 0) ?
             data.map((row, rowIndex) => (
               <TableRow key={rowIndex}>
                 {columns.map((column) => (
                   <TableCell
                     key={column.key}
-                    className={"border text-gray-500 dark:border-[#262730] font-normal max-w-[300px]"}
+                    className={"border text-gray-400 dark:border-[#262730] font-normal max-w-[300px]"}
                   >
                     {column.render ? column.render(row[column.key], row) : row[column.key]}
                   </TableCell>
                 ))}
               </TableRow>
-            ))}
+            )) :
+            <TableRow >
+              <TableCell
+                className={"border text-center text-red-600 dark:border-[#262730] font-normal max-w-[300px]"}
+              >
+                Ma'lumot topilmadi
+              </TableCell>
+              <TableCell
+                className={"border text-center text-red-600 dark:border-[#262730] font-normal max-w-[300px]"}
+              >
+                0
+              </TableCell>
+            </TableRow>
+
+          }
         </TableBody>
       </Table>
     </div>

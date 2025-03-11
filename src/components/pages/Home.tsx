@@ -14,16 +14,12 @@ export default function FinancialTracker() {
     const filteredParams = Object.fromEntries(
         Object.entries(queryINN).filter(([_, value]) => value !== 0)
     );
-    const { data: dataTransactions } = useGet(TRANSACTIONS, { params: filteredParams });
+    const { data: dataTransactions } = useGet(TRANSACTIONS, { params: filteredParams, options: { enabled: Boolean(queryINN?.buyer_inn || queryINN.supplier_inn) } });
 
     const data = [
         {
             name: "Financial Tracker",
             amount: 100
-        },
-        {
-            name: "Financial Tracker",
-            amount: 200
         },
     ]
 
@@ -85,6 +81,7 @@ export default function FinancialTracker() {
 
 
 
+
     return (
         <div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -132,30 +129,33 @@ export default function FinancialTracker() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {(queryINN.buyer_inn || queryINN.supplier_inn) ? <>
 
-                <div className="w-full">
-                    <div className="mt-8 mb-4">
-                        <h1 className="text-2xl font-bold mb-2">Qarzdorlik: 0</h1>
-                        <h3 className="text-md mb-6 text-gray-600 dark:text-white">Tushum</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <div className="w-full">
+                        <div className="mt-8 mb-4">
+                            <h1 className="text-2xl font-bold mb-2">Qarzdorlik: 0</h1>
+                            <h3 className="text-md mb-6 text-gray-600 dark:text-white">Tushum</h3>
+                        </div>
+                        <DataTable id="1" isSuccess={true} columns={columnsLefts} data={data} />
                     </div>
-                    <DataTable id="1" isSuccess={true} columns={columnsLefts} data={data} />
+
+                    <div className="w-full">
+                        <div className="mt-8 mb-4">
+                            <h1 className="text-2xl font-bold mb-2">Qarzdorlik: 0</h1>
+                            <h3 className="text-md mb-6 text-gray-600 dark:text-white">Xarajat</h3>
+                        </div>
+                        <DataTable id="2" isSuccess={true} columns={columnsRights} data={data} />
+                    </div>
+
                 </div>
 
-                <div className="w-full">
-                    <div className="mt-8 mb-4">
-                        <h1 className="text-2xl font-bold mb-2">Qarzdorlik: 0</h1>
-                        <h3 className="text-md mb-6 text-gray-600 dark:text-white">Xarajat</h3>
-                    </div>
-                    <DataTable id="2" isSuccess={true} columns={columnsRights} data={data} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-12">
+                    <DataTable id="3" isSuccess={true} columns={columnsLefts2} data={data2} />
+                    <DataTable id="4" isSuccess={true} columns={columnsRights2} data={data2} />
                 </div>
-
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-12">
-                <DataTable id="3" isSuccess={true} columns={columnsLefts2} data={data2} />
-                <DataTable id="4" isSuccess={true} columns={columnsRights2} data={data2} />
-            </div>
+            </> : null}
         </div>
     )
 }
