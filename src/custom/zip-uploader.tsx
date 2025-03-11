@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { usePost } from "@/services/https";
 import { UPLOAD } from "@/services/api-endpoints";
 import { toast } from "sonner";
-import JSZip from "jszip";
 
 export default function ZipUploader() {
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadMode, setUploadMode] = useState<"file" | "folder">("file");
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate, isPending: isLoading } = usePost({
@@ -22,8 +23,8 @@ export default function ZipUploader() {
   },
     {
       headers: { "Content-Type": "multipart/form-data" },
-    }
 
+    }
   );
 
   const MAX_FILE_SIZE = 1000 * 1024 * 1024;
@@ -35,20 +36,43 @@ export default function ZipUploader() {
 
   const handleDragLeave = () => setIsDragging(false);
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-    handleFileSelection(e.dataTransfer.files);
-  };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      handleFileSelection(e.target.files);
+    if (uploadMode === "folder") {
+      const items = e.dataTransfer.items;
+      const folderFiles: File[] = [];
+      for (const item of items) {
+        if (item.webkitGetAsEntry()?.isDirectory) {
+          await processDirectory(item.webkitGetAsEntry() as FileSystemDirectoryEntry, folderFiles);
+        } else {
+          const file = item.getAsFile();
+          if (file) folderFiles.push(file);
+        }
+      }
+      handleFileSelection(folderFiles);
+    } else {
+      handleFileSelection(Array.from(e.dataTransfer.files));
     }
   };
 
-  const handleFileSelection = (selectedFiles: FileList) => {
-    const validFiles = Array.from(selectedFiles).filter((file) => file.size <= MAX_FILE_SIZE);
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files);
+      handleFileSelection(selectedFiles);
+    }
+  };
+
+  const handleFolderChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const folderFiles = Array.from(e.target.files);
+      handleFileSelection(folderFiles);
+    }
+  };
+
+  const handleFileSelection = (selectedFiles: File[]) => {
+    const validFiles = selectedFiles.filter((file) => file.size <= MAX_FILE_SIZE);
     if (validFiles.length === 0) {
       toast.warning("Fayllar hajmi 1000 MB dan oshmasligi kerak");
       return;
@@ -56,21 +80,35 @@ export default function ZipUploader() {
     setFiles(validFiles);
   };
 
+  const processDirectory = (entry: FileSystemEntry, fileList: File[]) =>
+    new Promise<void>((resolve) => {
+      const dirReader = (entry as FileSystemDirectoryEntry).createReader();
+      dirReader.readEntries(async (entries) => {
+        for (const subEntry of entries) {
+          if (subEntry.isDirectory) {
+            await processDirectory(subEntry, fileList);
+          } else {
+            const file = await new Promise<File | null>((res) =>
+              (subEntry as FileSystemFileEntry).file(res)
+            );
+            if (file) fileList.push(file);
+          }
+        }
+        resolve();
+      });
+    });
+
   const handleStartUpload = async () => {
     if (files.length === 0) return;
 
     setIsUploading(true);
     setUploadProgress(0);
 
-    const zip = new JSZip();
-    files.forEach((file) => zip.file(file.name, file));
-
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-
-    console.log(zipBlob);
-
     const formData = new FormData();
-    formData.append("file", zipBlob, "files.zip");
+
+    for (const file of files) {
+      formData.append("file", file);
+    }
 
     mutate(UPLOAD, formData);
   };
@@ -94,13 +132,33 @@ export default function ZipUploader() {
     }
   }, [isLoading, isUploading]);
 
-  console.log(files);
-
-
   return (
     <div className="w-full">
+      <div className="flex items-center gap-4 mb-4">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="uploadMode"
+            value="file"
+            checked={uploadMode === "file"}
+            onChange={() => setUploadMode("file")}
+          />
+          <span className="text-sm">Fayl yuklash</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="uploadMode"
+            value="folder"
+            checked={uploadMode === "folder"}
+            onChange={() => setUploadMode("folder")}
+          />
+          <span className="text-sm">Papka yuklash</span>
+        </label>
+      </div>
+
       <div
-        className={`border-2 bg-white dark:bg-background rounded-lg p-6 mb-4 text-center transition-colors
+        className={`border-2 bg-white dark:bg-background overflow-hidden rounded-lg p-6 mb-4 text-center transition-colors
           ${isDragging ? "border-primary bg-primary/5" : "dark:border-gray-600 border"}
           ${files.length > 0 ? "bg-green-50 border-green-600" : ""}`}
         onDragOver={handleDragOver}
@@ -115,17 +173,21 @@ export default function ZipUploader() {
               onClick={() => fileInputRef.current?.click()}
               className="border-gray-400 w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500 hover:bg-red-50 hover:text-red-600"
             >
-              Fayllarni yuklash
+              {uploadMode === "file" ? "Faylni tanlang" : "Papkani tanlang"}
             </Button>
-            <input type="file" ref={fileInputRef}
+            <input
+              type="file"
+              ref={fileInputRef}
               multiple
-              onChange={handleFileChange}
-              className="hidden" />
+              onChange={uploadMode === "file" ? handleFileChange : handleFolderChange}
+              {...(uploadMode === "folder" ? { webkitdirectory: "true", directory: "true", mozdirectory: "true" } as unknown as React.InputHTMLAttributes<HTMLInputElement> : {})}
+              className="hidden"
+            />
           </>
         ) : (
           <div className="py-2">
             {files.map((file, index) => (
-              <p key={index} className="font-medium mb-1">
+              <p key={index} className="font-medium mb-1 break-all">
                 {file.name} - {(file.size / (1024 * 1024)).toFixed(2)} MB
               </p>
             ))}
@@ -144,21 +206,10 @@ export default function ZipUploader() {
       </div>
 
       <div className="flex w-full gap-4">
-        <Button
-          variant="outline"
-          onClick={handleStartUpload}
-          disabled={files.length === 0 || isUploading}
-          className="border-gray-400 w-full bg-gray-50 dark:bg-[#262730] hover:border-green-500 hover:bg-green-50 hover:text-green-600"
-        >
+        <Button className="w-full" onClick={handleStartUpload} disabled={files.length === 0 || isUploading}>
           Boshlash
         </Button>
-        <Button
-          variant="outline"
-          onClick={handleReset}
-          className="border-gray-400 w-full bg-gray-50 dark:bg-[#262730] hover:border-red-500 hover:bg-red-50 hover:text-red-600"
-        >
-          Tozalash
-        </Button>
+        <Button className="w-full" onClick={handleReset}>Tozalash</Button>
       </div>
     </div>
   );

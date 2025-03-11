@@ -129,7 +129,7 @@ const DataTable = ({ data, columns, isSuccess, id, hasFixedRowCount=false }: Pro
                 {columns.map((column) => (
                   <TableCell
                     key={column.key}
-                    className="border text-gray-400 dark:border-[#262730] font-normal max-w-[300px] text-center"
+                    className="border text-gray-400 dark:border-[#262730] font-normal max-w-[300px] text-start"
                   >
                     ---
                   </TableCell>

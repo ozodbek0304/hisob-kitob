@@ -90,11 +90,16 @@
   background-color: #121212;
   border-color: #333;
   color: white;
+  padding: 10px;
 }
 
 .dark .react-datepicker__header {
   background-color: #121212;
   border-bottom-color: #333;
+}
+.dark .react-datepicker__header__dropdown{
+  margin: 10px 0 !important;
+
 }
 
 .dark .react-datepicker__current-month,
