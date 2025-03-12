@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect, type DragEvent, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { usePost } from "@/services/https";
-import { UPLOAD } from "@/services/api-endpoints";
+import { useGet, usePost } from "@/services/https";
+import { CLEAR_API, UPLOAD } from "@/services/api-endpoints";
 import { toast } from "sonner";
 import JSZip from "jszip";
 
@@ -13,6 +13,8 @@ export default function ZipUploader() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadMode, setUploadMode] = useState<"file" | "folder">("file");
+  const [clear, setClear] = useState(false);
+  const { } = useGet(CLEAR_API, { options: { enabled: clear } })
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -105,6 +107,7 @@ export default function ZipUploader() {
 
   const handleReset = () => {
     setFiles([]);
+    setClear(true);
     setIsUploading(false);
     setUploadProgress(0);
     if (fileInputRef.current) {

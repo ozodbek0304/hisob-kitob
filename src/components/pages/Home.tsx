@@ -16,7 +16,11 @@ export default function FinancialTracker() {
     const filteredParams = Object.fromEntries(
         Object.entries(queryINN).filter(([_, value]) => value !== 0)
     );
-    const { data: dataTransactions, isSuccess } = useGet(TRANSACTIONS, { params: filteredParams });
+
+    const { data: dataTransactions, isSuccess } = useGet(TRANSACTIONS, { params: filteredParams })
+
+
+
 
 
     const columnsLefts = () => {
@@ -91,85 +95,94 @@ export default function FinancialTracker() {
         )
     }
 
-    const dataCredit = isSuccess && dataTransactions.invoice.map((item: any, index: number) => ({
-        name: item.price,
-        price: dataTransactions.credit[index]?.price || "⎯",
-    }));
 
-    const dataDb = isSuccess && dataTransactions.invoice.map((item: any, index: number) => ({
-        name: item.price,
-        price: dataTransactions.debit[index]?.price || "⎯",
-    }));
+    const dataCredit = isSuccess && dataTransactions?.invoice?.length
+        ? dataTransactions.invoice.map((item: any, index: number) => ({
+            name: item.price,
+            price: dataTransactions.credit?.[index]?.price || "⎯",
+        }))
+        : [];
+
+    const dataDb = isSuccess && dataTransactions?.invoice?.length
+        ? dataTransactions.invoice.map((item: any, index: number) => ({
+            name: item.price,
+            price: dataTransactions.debit?.[index]?.price || "⎯",
+        }))
+        : [];
+
+
+
+
+
 
 
 
     return (
         <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="w-full flex flex-col gap-2">
-                    <Label htmlFor="Inn_1">
-                        Sotib oluvchi INN
-                    </Label>
-                    <NumericFormat
-                        maxLength={11}
-                        id={"Inn_1"}
-                        className={cn(
-                            "flex h-9 w-full rounded-md border border-input bg-background dark:bg-[#262730] px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+            <div className="lg:sticky bg-background lg:top-12 lg:z-50 lg:pb-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="w-full flex flex-col gap-2">
+                        <Label htmlFor="Inn_1">
+                            Sotib oluvchi INN
+                        </Label>
+                        <NumericFormat
+                            maxLength={11}
+                            id={"Inn_1"}
+                            className={cn(
+                                "flex h-9 w-full rounded-md border border-input bg-background dark:bg-[#262730] px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
 
-                        )}
-                        thousandSeparator={" "}
-                        placeholder={"Sotib oluvchi INN"}
-                        onValueChange={(val) => {
-                            if (val) {
-                                setQueryINN((prev) => ({ ...prev, buyer_inn: val.floatValue }))
-                            }
-                        }}
-                        allowNegative={false}
-                    />
-                </div>
-                <div className="w-full flex flex-col gap-2">
-                    <Label htmlFor="Inn_1">
-                        Yetkazib beruvchi INN
-                    </Label>
-                    <NumericFormat
-                        maxLength={11}
-                        id={"Inn_1"}
-                        className={cn(
-                            "flex h-9 w-full rounded-md border border-input bg-background dark:bg-[#262730] px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
-
-                        )}
-                        thousandSeparator={" "}
-                        placeholder={"Yetkazib beruvchi INN"}
-                        onValueChange={(val) => {
-                            if (val) {
-                                setQueryINN((prev) => ({ ...prev, supplier_inn: val.floatValue }))
-                            }
-                        }}
-                        allowNegative={false}
-                    />
-                </div>
-            </div>
-
-
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                <div className="w-full">
-                    <div className="mt-8 mb-4">
-                        <h1 className="text-2xl font-bold mb-2 dark:text-white"><span>Qarzdorlik:</span> <span>{addPeriodToThousands(dataTransactions?.diff_debit)}</span> </h1>
-                        <h3 className="text-md mb-6 dark:text-white flex items-center gap-1"><span>Tushum</span> <ArrowDownToLine className="h-4 w-4" /></h3>
+                            )}
+                            thousandSeparator={" "}
+                            placeholder={"Sotib oluvchi INN"}
+                            onValueChange={(val) => {
+                                if (val) {
+                                    setQueryINN((prev) => ({ ...prev, buyer_inn: val.floatValue }))
+                                }
+                            }}
+                            allowNegative={false}
+                        />
                     </div>
-                    <DataTable id="3" isSuccess={isSuccess} columns={columnsLefts()} data={[{ name: addPeriodToThousands(dataTransactions?.invoice_total), price: (dataTransactions?.credit_total) }]} />
-                </div>
+                    <div className="w-full flex flex-col gap-2">
+                        <Label htmlFor="Inn_1">
+                            Yetkazib beruvchi INN
+                        </Label>
+                        <NumericFormat
+                            maxLength={11}
+                            id={"Inn_1"}
+                            className={cn(
+                                "flex h-9 w-full rounded-md border border-input bg-background dark:bg-[#262730] px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
 
-                <div className="w-full">
-                    <div className="mt-8 mb-4">
-                        <h1 className="text-2xl font-bold mb-2 dark:text-white"><span>Qarzdorlik:</span> <span>{addPeriodToThousands(dataTransactions?.diff_credit)}</span> </h1>
-                        <h3 className="text-md mb-6 dark:text-white flex items-center gap-1"><span>Xarajat</span> <ArrowUpFromLine className="h-4 w-4" /></h3>
+                            )}
+                            thousandSeparator={" "}
+                            placeholder={"Yetkazib beruvchi INN"}
+                            onValueChange={(val) => {
+                                if (val) {
+                                    setQueryINN((prev) => ({ ...prev, supplier_inn: val.floatValue }))
+                                }
+                            }}
+                            allowNegative={false}
+                        />
                     </div>
-                    <DataTable id="3" isSuccess={isSuccess} columns={columnsRights()} data={[{ name: addPeriodToThousands(dataTransactions?.invoice_total), price: dataTransactions?.debit_total }]} />
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 ">
 
+                    <div className="w-full">
+                        <div className="mt-8 mb-4">
+                            <h1 className="text-2xl font-bold mb-2 dark:text-white"><span>Qarzdorlik: </span> <span>{dataTransactions?.diff_debit ? addPeriodToThousands(dataTransactions?.diff_debit) : "⎯"}</span> </h1>
+                            <h3 className="text-md mb-6 dark:text-white flex items-center gap-1"><span>Tushum</span> <ArrowDownToLine className="h-4 w-4" /></h3>
+                        </div>
+                        <DataTable id="3" isSuccess={isSuccess} columns={columnsLefts()} data={isSuccess && dataTransactions?.invoice?.length ? [{ name: addPeriodToThousands(dataTransactions?.invoice_total), price: (dataTransactions?.credit_total) }] : []} />
+                    </div>
+
+                    <div className="w-full">
+                        <div className="mt-8 mb-4">
+                            <h1 className="text-2xl font-bold mb-2 dark:text-white"><span>Qarzdorlik: </span> <span>{dataTransactions?.diff_credit ? addPeriodToThousands(dataTransactions?.diff_credit) : "⎯"}</span> </h1>
+                            <h3 className="text-md mb-6 dark:text-white flex items-center gap-1"><span>Xarajat</span> <ArrowUpFromLine className="h-4 w-4" /></h3>
+                        </div>
+                        <DataTable id="3" isSuccess={isSuccess} columns={columnsRights()} data={isSuccess && dataTransactions?.invoice?.length ? [{ name: addPeriodToThousands(dataTransactions?.invoice_total), price: dataTransactions?.debit_total }] : []} />
+                    </div>
+
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-12">
@@ -177,6 +190,7 @@ export default function FinancialTracker() {
                     data={dataDb}
                 />
                 <DataTable id="1" filteredParams={filteredParams} isSuccess={isSuccess} hasFixedRowCount columns={columnsRigth2()} data={dataCredit} />
+
             </div>
 
         </div>
