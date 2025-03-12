@@ -1,10 +1,7 @@
 import { FC, MouseEventHandler } from "react";
 import { Button } from "@/components/ui/button";
-import { Expand } from "@/components/svg";
-import {
-  TooltipArrow
-} from "@/components/ui/tooltip";
-import TooltipCustom from "@/components/form/custom-tooltip";
+import { Maximize } from "lucide-react";
+
 
 type CustomDocument = Document & {
   mozCancelFullScreen?: () => void;
@@ -38,27 +35,16 @@ const FullScreenToggle: FC = () => {
   };
 
   return (
-    <TooltipCustom
-      id={"full-screen"}
-      tigerContentChild={
-        <Button
-          onClick={toggleFullScreen}
-          variant="ghost"
-          size="icon"
-          className="relative md:h-9 md:w-9 h-8 w-8 hover:bg-default-100 dark:hover:bg-default-200
-     data-[state=open]:bg-default-100  dark:data-[state=open]:bg-default-200
-       hover:text-primary text-default-500 dark:text-default-800  rounded-full "
-        >
-          <Expand className="h-5 w-5" />
-        </Button>
-      }
-      toolltipContentChild={
-        <>
-          <TooltipArrow className="fill-primary" />
-          <p>To'liq ekran</p>
-        </>
-      }
-    />
+    <Button
+      onClick={toggleFullScreen}
+      variant="ghost"
+      size="icon"
+      className="relative md:h-9 md:w-9 h-8 w-8 hover:bg-default-100 dark:hover:bg-default-200
+data-[state=open]:bg-default-100  dark:data-[state=open]:bg-default-200
+ hover:text-primary text-default-500 dark:text-default-800  rounded-full "
+    >
+      <Maximize className="h-5 w-5" />
+    </Button>
   );
 };
 

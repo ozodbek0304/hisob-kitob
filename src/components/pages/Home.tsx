@@ -6,7 +6,7 @@ import { useGet } from "@/services/https"
 import { TRANSACTIONS } from "@/services/api-endpoints"
 import { cn } from "@/lib/utils"
 import { NumericFormat } from "react-number-format"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react"
 import { addPeriodToThousands } from "@/lib/price-formatter"
 
@@ -19,77 +19,86 @@ export default function FinancialTracker() {
     const { data: dataTransactions, isSuccess } = useGet(TRANSACTIONS, { params: filteredParams });
 
 
-    const columnsLefts = [
-        {
-            key: "name",
-            label: "Jami Topshirilgan Faktura",
-        },
-        {
-            key: "price",
-            label: "Jami Kirim",
-            render: (value: number) => (
-                <span>{addPeriodToThousands(value)}</span>
-            )
-        },
-    ]
+    const columnsLefts = () => {
+        return useMemo(() => [
+            {
+                key: "name",
+                label: "Jami Topshirilgan Faktura",
+            },
+            {
+                key: "price",
+                label: "Jami Kirim",
+                render: (value: number) => (
+                    <span>{addPeriodToThousands(value)}</span>
+                )
+            },
+        ], [])
+    }
 
-    const columnsRights = [
-        {
-            key: "name",
-            label: "Jami Topshirilgan Faktura",
-        },
-        {
-            key: "price",
-            label: "Jami Chiqim",
-            render: (value: number) => (
-                <span>{addPeriodToThousands(value)}</span>
-            )
-        },
-    ]
+    const columnsRights = () => {
+        return useMemo(() => [
+            {
+                key: "name",
+                label: "Jami Topshirilgan Faktura",
+            },
+            {
+                key: "price",
+                label: "Jami Chiqim",
+                render: (value: number) => (
+                    <span>{addPeriodToThousands(value)}</span>
+                )
+            },
+        ], [])
+    }
 
-    const columnsLefts2 = [
-        {
-            key: "name",
-            label: "Qabul Qilingan Faktura",
-            render: (value: number) => (
-                <span>{addPeriodToThousands(value)}</span>
-            )
-        },
-        {
-            key: "price",
-            label: "Bank DB",
-            render: (value: number) => (
-                <span>{addPeriodToThousands(value)}</span>
-            )
-        },
-    ]
 
-    const columnsRigth2 = [
-        {
-            key: "name",
-            label: "Qabul Qilingan Faktura",
-            render: (value: number) => (
-                <span>{addPeriodToThousands(value)}</span>
-            )
-        },
-        {
-            key: "price",
-            label: "Bank KB",
-            render: (value: number) => (
-                <span>{addPeriodToThousands(value)}</span>
-            )
-        },
-    ]
+    const columnsLefts2 = () => {
+        return useMemo(() => [
+            {
+                key: "name",
+                label: "Qabul Qilingan Faktura",
+                render: (value: number) => (
+                    <span>{addPeriodToThousands(value)}</span>
+                )
+            },
+            {
+                key: "price",
+                label: "Bank DB",
+                render: (value: number) => (
+                    <span>{addPeriodToThousands(value)}</span>
+                )
+            },
+        ], [])
+    }
 
+    const columnsRigth2 = () => {
+        return useMemo(() => [
+            {
+                key: "name",
+                label: "Qabul Qilingan Faktura",
+                render: (value: number) => (
+                    <span>{addPeriodToThousands(value)}</span>
+                )
+            },
+            {
+                key: "price",
+                label: "Bank KB",
+                render: (value: number) => (
+                    <span>{addPeriodToThousands(value)}</span>
+                )
+            },
+        ], []
+        )
+    }
 
     const dataCredit = isSuccess && dataTransactions.invoice.map((item: any, index: number) => ({
         name: item.price,
-        price: dataTransactions.credit[index]?.price || "---",
+        price: dataTransactions.credit[index]?.price || "⎯",
     }));
 
     const dataDb = isSuccess && dataTransactions.invoice.map((item: any, index: number) => ({
         name: item.price,
-        price: dataTransactions.debit[index]?.price || "---",
+        price: dataTransactions.debit[index]?.price || "⎯",
     }));
 
 
@@ -150,7 +159,7 @@ export default function FinancialTracker() {
                         <h1 className="text-2xl font-bold mb-2 dark:text-white"><span>Qarzdorlik:</span> <span>{addPeriodToThousands(dataTransactions?.diff_debit)}</span> </h1>
                         <h3 className="text-md mb-6 dark:text-white flex items-center gap-1"><span>Tushum</span> <ArrowDownToLine className="h-4 w-4" /></h3>
                     </div>
-                    <DataTable  id="3" isSuccess={isSuccess} columns={columnsLefts} data={[{ name: addPeriodToThousands(dataTransactions?.invoice_total), price: (dataTransactions?.credit_total) }]} />
+                    <DataTable id="3" isSuccess={isSuccess} columns={columnsLefts()} data={[{ name: addPeriodToThousands(dataTransactions?.invoice_total), price: (dataTransactions?.credit_total) }]} />
                 </div>
 
                 <div className="w-full">
@@ -158,16 +167,16 @@ export default function FinancialTracker() {
                         <h1 className="text-2xl font-bold mb-2 dark:text-white"><span>Qarzdorlik:</span> <span>{addPeriodToThousands(dataTransactions?.diff_credit)}</span> </h1>
                         <h3 className="text-md mb-6 dark:text-white flex items-center gap-1"><span>Xarajat</span> <ArrowUpFromLine className="h-4 w-4" /></h3>
                     </div>
-                    <DataTable id="3"  isSuccess={isSuccess} columns={columnsRights} data={[{ name: addPeriodToThousands(dataTransactions?.invoice_total), price: dataTransactions?.debit_total }]} />
+                    <DataTable id="3" isSuccess={isSuccess} columns={columnsRights()} data={[{ name: addPeriodToThousands(dataTransactions?.invoice_total), price: dataTransactions?.debit_total }]} />
                 </div>
 
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-12">
-                <DataTable id="2" filteredParams={filteredParams} isSuccess={isSuccess} hasFixedRowCount columns={columnsLefts2}
+                <DataTable id="2" filteredParams={filteredParams} isSuccess={isSuccess} hasFixedRowCount columns={columnsLefts2()}
                     data={dataDb}
                 />
-                <DataTable id="1" filteredParams={filteredParams} isSuccess={isSuccess} hasFixedRowCount columns={columnsRigth2} data={dataCredit} />
+                <DataTable id="1" filteredParams={filteredParams} isSuccess={isSuccess} hasFixedRowCount columns={columnsRigth2()} data={dataCredit} />
             </div>
 
         </div>

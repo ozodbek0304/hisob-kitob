@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { usePost } from "@/services/https";
 import { UPLOAD } from "@/services/api-endpoints";
 import { toast } from "sonner";
-import { downloadExcel } from "@/lib/download-excel";
+import JSZip from "jszip";
 
 export default function ZipUploader() {
   const [files, setFiles] = useState<File[]>([]);
@@ -17,14 +17,16 @@ export default function ZipUploader() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate, isPending: isLoading } = usePost({
-    onSuccess: (data) => {
-      toast.success(data?.message);
+    onSuccess: () => {
+      toast.success("Muvaffaqiyatli yuklandi!");
       handleReset();
-      downloadExcel(data)
     },
   },
     {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "multipart/form-data"
+      },
 
     }
   );
@@ -41,22 +43,7 @@ export default function ZipUploader() {
   const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-
-    if (uploadMode === "folder") {
-      const items = e.dataTransfer.items;
-      const folderFiles: File[] = [];
-      for (const item of items) {
-        if (item.webkitGetAsEntry()?.isDirectory) {
-          await processDirectory(item.webkitGetAsEntry() as FileSystemDirectoryEntry, folderFiles);
-        } else {
-          const file = item.getAsFile();
-          if (file) folderFiles.push(file);
-        }
-      }
-      handleFileSelection(folderFiles);
-    } else {
-      handleFileSelection(Array.from(e.dataTransfer.files));
-    }
+    handleFileSelection(Array.from(e.dataTransfer.files));
   };
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -82,23 +69,6 @@ export default function ZipUploader() {
     setFiles(validFiles);
   };
 
-  const processDirectory = (entry: FileSystemEntry, fileList: File[]) =>
-    new Promise<void>((resolve) => {
-      const dirReader = (entry as FileSystemDirectoryEntry).createReader();
-      dirReader.readEntries(async (entries) => {
-        for (const subEntry of entries) {
-          if (subEntry.isDirectory) {
-            await processDirectory(subEntry, fileList);
-          } else {
-            const file = await new Promise<File | null>((res) =>
-              (subEntry as FileSystemFileEntry).file(res)
-            );
-            if (file) fileList.push(file);
-          }
-        }
-        resolve();
-      });
-    });
 
   const handleStartUpload = async () => {
     if (files.length === 0) return;
@@ -106,11 +76,29 @@ export default function ZipUploader() {
     setIsUploading(true);
     setUploadProgress(0);
 
+
+    const zip = new JSZip();
+    let zipNeeded = false;
+
+    files.forEach((file) => {
+      const isZipFile = file.name.toLowerCase().endsWith(".zip");
+      if (!isZipFile) {
+        zipNeeded = true;
+        const path = uploadMode === "folder" ? file.webkitRelativePath || file.name : file.name;
+        zip.file(path, file);
+      }
+    });
     const formData = new FormData();
 
-    for (const file of files) {
-      formData.append("file", file);
+    if (zipNeeded) {
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      formData.append("file", zipBlob, "uploaded_files.zip");
+    } else {
+      files.forEach((file) => {
+        formData.append("file", file, file.name);
+      });
     }
+
 
     mutate(UPLOAD, formData);
   };

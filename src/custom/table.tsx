@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
-import { Download, Maximize2, Minimize2 } from "lucide-react"
+import { Download, Maximize, Minimize2 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { downloadExcel } from "@/lib/download-excel"
 import { useGet } from "@/services/https"
@@ -85,7 +85,7 @@ const DataTable = ({ data, columns, isSuccess, id, hasFixedRowCount = false, fil
               {isFullScreen ? (
                 <Minimize2 className="h-4 w-4 text-gray-600 dark:text-white" />
               ) : (
-                <Maximize2 className="h-4 w-4 text-gray-600 dark:text-white" />
+                <Maximize className="h-4 w-4 text-gray-600 dark:text-white" />
               )}
             </button>
           </div>
@@ -143,7 +143,7 @@ const DataTable = ({ data, columns, isSuccess, id, hasFixedRowCount = false, fil
                     key={column.key}
                     className="border text-gray-400 dark:border-[#262730] font-normal max-w-[300px] text-start"
                   >
-                    ---
+                    ⎯
                   </TableCell>
                 ))}
               </TableRow>
